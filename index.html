@@ -853,21 +853,23 @@
 </footer>
 
 <script>
-  function handleSubmit(e, successId) {
+  async function handleSubmit(e, successId) {
     e.preventDefault();
     const form = e.target;
     const email = form.querySelector('input[type="email"]').value;
 
-    // Store email locally for now
-    const emails = JSON.parse(localStorage.getItem('hd_emails') || '[]');
-    emails.push({ email, ts: new Date().toISOString() });
-    localStorage.setItem('hd_emails', JSON.stringify(emails));
+    try {
+      await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+    } catch (err) {
+      console.error(err);
+    }
 
     form.style.display = 'none';
     document.getElementById(successId).classList.add('show');
-
-    // TODO: replace with actual email capture endpoint (e.g. Mailchimp, ConvertKit, Resend)
-    console.log('Email captured:', email);
   }
 
   // Scroll reveal for sections
